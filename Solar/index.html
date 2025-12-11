@@ -1,1 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>3D Solar System</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Import Maps Polyfill -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div id="loading">Loading Solar System...</div>
+
+    <div id="left-panel" class="panel">
+        <h2>SOLAR SYSTEM</h2>
+        <button id="btn-overview" class="btn-action">☀ Overview</button>
+
+        <div class="control-group">
+            <label style="font-size:12px; color:#aaa; display:block; margin-bottom:8px;">Graphics Quality</label>
+            <div class="quality-toggle">
+                <input type="radio" id="quality-low" name="graphics-quality" value="low" checked>
+                <label for="quality-low">Low</label>
+
+                <input type="radio" id="quality-high" name="graphics-quality" value="high">
+                <label for="quality-high">High</label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label style="font-size:12px; color:#aaa; display:block; margin-bottom:8px;">Orbit Speed</label>
+            <input type="range" id="speed-slider" min="0" max="5" step="0.1" value="1" style="width:100%;">
+            <div style="display:flex; justify-content:space-between; font-size:10px; color:#888; margin-top:4px;">
+                <span>Pause</span>
+                <span id="speed-value">1.0x</span>
+                <span>5x</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <button id="btn-toggle-labels" class="btn-secondary">🏷️ Hide Labels</button>
+            <button id="btn-toggle-orbits" class="btn-secondary">⭕ Hide Orbits</button>
+            <button id="btn-toggle-theme" class="btn-secondary">☀️ Light Mode</button>
+        </div>
+
+        <div id="planet-list">
+            <!-- List will be populated by JS -->
+        </div>
+    </div>
+
+    <div id="right-panel" class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 id="info-name" style="margin: 0;">Planet Name</h2>
+            <button id="btn-minimize-info" class="mobile-only" style="display: none;">−</button>
+        </div>
+        <div id="info-content">
+            <!-- Details go here -->
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="stats-panel">
+        <div id="fps-counter">--</div>
+    </div>
+    
+    <!-- Focus Lock Hint -->
+    <div id="focus-hint" style="display: none;">
+        🔒 Focus Locked<br>
+        <span style="font-size: 10px; opacity: 0.8;">Use Overview or List to change</span>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="mobile-only">☰</button>
+    <button id="mobile-info-toggle" class="mobile-only" style="display: none;">⤢</button>
+    <div id="mobile-overlay" class="mobile-only"></div>
+
+    <script type="module">
+        // Import theme functions
+        import * as THREE from 'three';
+        
+        // Theme switching functions
+        window.createStarfield = function() {
+            const count = 5000;
+            const spread = 8000; // 2x from 4000 to cover Neptune's orbit (640 units)
+            
+            // Create instanced mesh for spherical stars
+            const geometry = new THREE.SphereGeometry(1, 8, 8); // Small sphere
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                transparent: true, 
+                opacity: 0.9
+            });
+            
+            const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
+            const dummy = new THREE.Object3D();
+            const color = new THREE.Color();
+            
+            for (let i = 0; i < count; i++) {
+                // Random position in 3D space
+                dummy.position.set(
+                    (Math.random() - 0.5) * spread,
+                    (Math.random() - 0.5) * spread,
+                    (Math.random() - 0.5) * spread
+                );
+                
+                // Random size variation (0.5 to 2.0)
+                const size = 0.5 + Math.random() * 1.5;
+                dummy.scale.set(size, size, size);
+                
+                dummy.updateMatrix();
+                instancedMesh.setMatrixAt(i, dummy.matrix);
+                
+                // Random color variation (white to slight yellow/blue)
+                const colorVariation = Math.random();
+                if (colorVariation < 0.7) {
+                    color.setHex(0xffffff); // White
+                } else if (colorVariation < 0.85) {
+                    color.setHex(0xffffdd); // Slight yellow
+                } else {
+                    color.setHex(0xddddff); // Slight blue
+                }
+                instancedMesh.setColorAt(i, color);
+            }
+            
+            instancedMesh.instanceMatrix.needsUpdate = true;
+            if (instancedMesh.instanceColor) {
+                instancedMesh.instanceColor.needsUpdate = true;
+            }
+            
+            window.starfield = instancedMesh;
+            window.scene.add(window.starfield);
+        };
+
+        window.applyTheme = function() {
+            if (window.lightMode) {
+                // Light Mode - darker background for better contrast
+                window.scene.background = new THREE.Color(0xffffff);
+                
+                // Hide starfield
+                if (window.starfield) window.starfield.visible = false;
+                
+                // Disable bloom effect
+                if (window.composer && window.bloomPass) {
+                    window.bloomPass.enabled = false;
+                }
+                
+                // Disable tone mapping for clearer colors
+                if (window.renderer) {
+                    window.renderer.toneMapping = THREE.NoToneMapping;
+                }
+                
+                // Disable shadows completely
+                if (window.renderer) {
+                    window.renderer.shadowMap.enabled = false;
+                }
+                
+                // Disable shadow casting from lights
+                if (window.sunLight) {
+                    window.sunLight.castShadow = false;
+                    window.sunLight.intensity = 0;
+                }
+                
+                if (window.sunPointLight) {
+                    window.sunPointLight.intensity = 0;
+                }
+                
+                // Update celestial objects to flat style
+                Object.values(window.celestialObjects).forEach(obj => {
+                    if (obj.mesh) {
+                        // Store original material once
+                        if (!obj.originalMaterial) {
+                            obj.originalMaterial = obj.mesh.material.clone();
+                        }
+                        
+                        // Dispose old material
+                        if (obj.mesh.material && obj.mesh.material !== obj.originalMaterial) {
+                            obj.mesh.material.dispose();
+                        }
+                        
+                        // Check if high quality and has texture
+                        if (window.graphicsQuality === 'high' && obj.originalMaterial.map) {
+                            // Clone the texture and adjust
+                            const texture = obj.originalMaterial.map.clone();
+                            texture.needsUpdate = true;
+                            
+                            // Use texture but with MeshBasicMaterial (no lighting)
+                            obj.mesh.material = new THREE.MeshBasicMaterial({
+                                map: texture,
+                                flatShading: true,
+                                color: 0xffffff // Full brightness
+                            });
+                            
+                            // Increase contrast by adjusting material
+                            obj.mesh.material.toneMapped = false;
+                        } else {
+                            // Get color from data
+                            let color = 0xffffff;
+                            if (obj.data) {
+                                if (obj.data.color) {
+                                    // Convert hex string to number
+                                    if (typeof obj.data.color === 'string') {
+                                        color = parseInt(obj.data.color.replace('#', '0x'));
+                                    } else {
+                                        color = obj.data.color;
+                                    }
+                                }
+                                
+                                // Special colors for specific objects
+                                if (obj.data.id === 'sun') {
+                                    color = 0xFFDD00;
+                                }
+                            }
+                            
+                            // Create flat basic material (no lighting, no shadows)
+                            obj.mesh.material = new THREE.MeshBasicMaterial({
+                                color: color,
+                                flatShading: true
+                            });
+                        }
+                        
+                        // Disable shadows
+                        obj.mesh.castShadow = false;
+                        obj.mesh.receiveShadow = false;
+                    }
+                });
+                
+                // Fix procedural moons (asteroid belts) - make them visible
+                if (window.scene) {
+                    window.scene.traverse((child) => {
+                        if (child.isInstancedMesh) {
+                            // Change material to basic with light color
+                            if (child.material) {
+                                child.material = new THREE.MeshBasicMaterial({
+                                    color: 0xaaaaaa
+                                });
+                            }
+                        }
+                    });
+                }
+                
+            } else {
+                // Dark Mode
+                window.scene.background = new THREE.Color(0x000000);
+                
+                // Show starfield
+                if (window.starfield) window.starfield.visible = true;
+                
+                // Enable bloom effect
+                if (window.composer && window.bloomPass) {
+                    window.bloomPass.enabled = true;
+                }
+                
+                // Restore tone mapping
+                if (window.renderer) {
+                    window.renderer.toneMapping = THREE.ReinhardToneMapping;
+                }
+                
+                // Restore shadow settings based on quality
+                if (window.renderer) {
+                    if (window.graphicsQuality === 'high') {
+                        window.renderer.shadowMap.enabled = true;
+                        window.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                    } else {
+                        window.renderer.shadowMap.enabled = false;
+                    }
+                }
+                
+                // Restore lighting based on quality
+                if (window.sunLight) {
+                    window.sunLight.castShadow = window.graphicsQuality === 'high';
+                    window.sunLight.intensity = window.graphicsQuality === 'high' ? 1.5 : 1.0;
+                }
+                
+                if (window.sunPointLight) {
+                    window.sunPointLight.intensity = window.graphicsQuality === 'high' ? 1.2 : 0.8;
+                }
+                
+                // Restore original materials
+                Object.values(window.celestialObjects).forEach(obj => {
+                    if (obj.mesh && obj.originalMaterial) {
+                        // Dispose current material if it's not the original
+                        if (obj.mesh.material && obj.mesh.material !== obj.originalMaterial) {
+                            obj.mesh.material.dispose();
+                        }
+                        
+                        // Restore original
+                        obj.mesh.material = obj.originalMaterial.clone();
+                        
+                        // Re-enable shadows based on quality
+                        if (window.graphicsQuality === 'high') {
+                            obj.mesh.castShadow = true;
+                            obj.mesh.receiveShadow = true;
+                        } else {
+                            obj.mesh.castShadow = false;
+                            obj.mesh.receiveShadow = false;
+                        }
+                    }
+                });
+                
+                // Restore procedural moons material
+                if (window.scene) {
+                    window.scene.traverse((child) => {
+                        if (child.isInstancedMesh) {
+                            // Restore to standard material
+                            if (child.material) {
+                                child.material = new THREE.MeshStandardMaterial({
+                                    color: 0x888888
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        };
+    </script>
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>
