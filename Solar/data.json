@@ -1,1 +1,180 @@
+{
+  "sun": {
+    "name": "Sun",
+    "radius": 40,
+    "color": "#ffd57e",
+    "emissive": "#ffaa00",
+    "description": "The star at the center of the Solar System."
+  },
+  "asteroidBelt": {
+    "name": "Asteroid Belt",
+    "innerRadius": 230,
+    "outerRadius": 270,
+    "count": { "low": 500, "high": 2000 },
+    "asteroidSize": { "min": 0.1, "max": 0.5 },
+    "color": "#8b7d6b",
+    "rotationSpeed": 0.006,
+    "description": "The main asteroid belt between Mars and Jupiter."
+  },
+  "planets": [
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "radius": 1.12,
+      "distance": 50,
+      "color": "#b5a7a7",
+      "rotationSpeed": 0.02,
+      "orbitalSpeed": 0.02,
+      "description": "The smallest planet in the Solar System and the closest to the Sun.",
+      "moons": []
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "radius": 2.80,
+      "distance": 90,
+      "color": "#e3bb76",
+      "rotationSpeed": 0.015,
+      "orbitalSpeed": 0.015,
+      "description": "Second planet from the Sun. It has a thick atmosphere.",
+      "moons": []
+    },
+    {
+      "id": "earth",
+      "name": "Earth",
+      "radius": 2.96,
+      "distance": 140,
+      "color": "#4b8fe6",
+      "rotationSpeed": 0.02,
+      "orbitalSpeed": 0.01,
+      "description": "Our home planet.",
+      "moons": [
+        {
+          "id": "moon",
+          "name": "Moon",
+          "radius": 1.20,
+          "distance": 20,
+          "color": "#d6d6d6",
+          "rotationSpeed": 0.05,
+          "orbitalSpeed": 0.05,
+          "description": "Earth's only natural satellite."
+        }
+      ]
+    },
+    {
+      "id": "mars",
+      "name": "Mars",
+      "radius": 1.60,
+      "distance": 200,
+      "color": "#c1440e",
+      "rotationSpeed": 0.02,
+      "orbitalSpeed": 0.008,
+      "description": "The Red Planet.",
+      "moons": [
+        {
+          "id": "phobos",
+          "name": "Phobos",
+          "radius": 0.006,
+          "distance": 9,
+          "color": "#8c7e76",
+          "rotationSpeed": 0.08,
+          "orbitalSpeed": 0.08,
+          "description": "One of Mars' moons."
+        },
+        {
+          "id": "deimos",
+          "name": "Deimos",
+          "radius": 0.004,
+          "distance": 14,
+          "color": "#a89b94",
+          "rotationSpeed": 0.04,
+          "orbitalSpeed": 0.04,
+          "description": "One of Mars' moons."
+        }
+      ]
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "radius": 32.20,
+      "distance": 600,
+      "color": "#d8ca9d",
+      "rotationSpeed": 0.04,
+      "orbitalSpeed": 0.005,
+      "description": "The largest planet in the Solar System.",
+      "moons": [
+        { "id": "metis", "name": "Metis", "radius": 0.08, "distance": 32, "color": "#c4b4a4", "rotationSpeed": 0.1, "orbitalSpeed": 0.11 },
+        { "id": "adrastea", "name": "Adrastea", "radius": 0.08, "distance": 35, "color": "#b5a595", "rotationSpeed": 0.09, "orbitalSpeed": 0.1 },
+        { "id": "amalthea", "name": "Amalthea", "radius": 0.30, "distance": 38, "color": "#d4a574", "rotationSpeed": 0.08, "orbitalSpeed": 0.09 },
+        { "id": "thebe", "name": "Thebe", "radius": 0.12, "distance": 42, "color": "#a89888", "rotationSpeed": 0.07, "orbitalSpeed": 0.08 },
+
+        { "id": "io", "name": "Io", "radius": 1.25, "distance": 48, "color": "#f8e25b", "rotationSpeed": 0.04, "orbitalSpeed": 0.06 },
+        { "id": "europa", "name": "Europa", "radius": 1.05, "distance": 56, "color": "#a3cdd9", "rotationSpeed": 0.03, "orbitalSpeed": 0.05 },
+        { "id": "ganymede", "name": "Ganymede", "radius": 1.75, "distance": 65, "color": "#8b7d6b", "rotationSpeed": 0.025, "orbitalSpeed": 0.04 },
+        { "id": "callisto", "name": "Callisto", "radius": 1.60, "distance": 75, "color": "#6b5d52", "rotationSpeed": 0.02, "orbitalSpeed": 0.035 },
+
+        { "id": "himalia", "name": "Himalia", "radius": 0.20, "distance": 85, "color": "#9b8b7e", "rotationSpeed": 0.06, "orbitalSpeed": 0.025 }
+      ]
+    },
+
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "radius": 26.70,
+      "distance": 1100,
+      "color": "#eead6c",
+      "rotationSpeed": 0.038,
+      "orbitalSpeed": 0.004,
+      "description": "Saturn with its rings.",
+      "moons": [
+        { "id": "mimas", "name": "Mimas", "radius": 0.10, "distance": 28, "color": "#c8c8c8", "rotationSpeed": 0.06, "orbitalSpeed": 0.07 },
+        { "id": "enceladus", "name": "Enceladus", "radius": 0.12, "distance": 32, "color": "#ffffff", "rotationSpeed": 0.05, "orbitalSpeed": 0.06 },
+        { "id": "tethys", "name": "Tethys", "radius": 0.25, "distance": 36, "color": "#f0f0f0", "rotationSpeed": 0.04, "orbitalSpeed": 0.05 },
+        { "id": "dione", "name": "Dione", "radius": 0.30, "distance": 42, "color": "#e8e8e8", "rotationSpeed": 0.035, "orbitalSpeed": 0.045 },
+        { "id": "rhea", "name": "Rhea", "radius": 0.40, "distance": 48, "color": "#d4d4d4", "rotationSpeed": 0.03, "orbitalSpeed": 0.04 },
+        { "id": "titan", "name": "Titan", "radius": 1.90, "distance": 58, "color": "#dcb758", "rotationSpeed": 0.02, "orbitalSpeed": 0.03 },
+        { "id": "hyperion", "name": "Hyperion", "radius": 0.06, "distance": 68, "color": "#b8a898", "rotationSpeed": 0.08, "orbitalSpeed": 0.025 },
+        { "id": "iapetus", "name": "Iapetus", "radius": 0.45, "distance": 78, "color": "#8b7d6b", "rotationSpeed": 0.015, "orbitalSpeed": 0.02 }
+      ]
+    },
+
+    {
+      "id": "uranus",
+      "name": "Uranus",
+      "radius": 11.70,
+      "distance": 2250,
+      "color": "#93b8be",
+      "rotationSpeed": 0.03,
+      "orbitalSpeed": 0.002,
+      "description": "Uranus, the sideways planet.",
+      "moons": [
+        { "id": "puck", "name": "Puck", "radius": 0.03, "distance": 20, "color": "#98a8b8", "rotationSpeed": 0.06, "orbitalSpeed": 0.08 },
+        { "id": "miranda", "name": "Miranda", "radius": 0.10, "distance": 24, "color": "#d8e8f8", "rotationSpeed": 0.05, "orbitalSpeed": 0.07 },
+        { "id": "ariel", "name": "Ariel", "radius": 0.28, "distance": 28, "color": "#c8d8e8", "rotationSpeed": 0.045, "orbitalSpeed": 0.06 },
+        { "id": "umbriel", "name": "Umbriel", "radius": 0.25, "distance": 32, "color": "#6b7b8b", "rotationSpeed": 0.04, "orbitalSpeed": 0.05 },
+        { "id": "titania", "name": "Titania", "radius": 0.40, "distance": 38, "color": "#b8c8d8", "rotationSpeed": 0.03, "orbitalSpeed": 0.04 },
+        { "id": "oberon", "name": "Oberon", "radius": 0.38, "distance": 44, "color": "#a8b8c8", "rotationSpeed": 0.025, "orbitalSpeed": 0.035 }
+      ]
+    },
+
+    {
+      "id": "neptune",
+      "name": "Neptune",
+      "radius": 11.20,
+      "distance": 3500,
+      "color": "#5b5dd1",
+      "rotationSpeed": 0.03,
+      "orbitalSpeed": 0.001,
+      "description": "The eighth planet from the Sun.",
+      "moons": [
+        { "id": "despina", "name": "Despina", "radius": 0.03, "distance": 18, "color": "#b8b8b8", "rotationSpeed": 0.08, "orbitalSpeed": 0.09 },
+        { "id": "galatea", "name": "Galatea", "radius": 0.03, "distance": 21, "color": "#a8a8a8", "rotationSpeed": 0.07, "orbitalSpeed": 0.08 },
+        { "id": "larissa", "name": "Larissa", "radius": 0.04, "distance": 24, "color": "#989898", "rotationSpeed": 0.06, "orbitalSpeed": 0.07 },
+        { "id": "proteus", "name": "Proteus", "radius": 0.09, "distance": 28, "color": "#888898", "rotationSpeed": 0.05, "orbitalSpeed": 0.06 },
+        { "id": "triton", "name": "Triton", "radius": 1.00, "distance": 34, "color": "#e8d8f8", "rotationSpeed": 0.02, "orbitalSpeed": 0.04 },
+        { "id": "nereid", "name": "Nereid", "radius": 0.15, "distance": 50, "color": "#a8a8b8", "rotationSpeed": 0.03, "orbitalSpeed": 0.02 }
+      ]
+    }
+  ]
+}
 
