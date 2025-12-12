@@ -381,7 +381,8 @@ function setGraphicsQuality(quality) {
         
         const targetObj = celestialObjects[savedFocus];
         if (targetObj) {
-            updateInfoPanel(targetObj.data);
+            const dataWithId = { ...targetObj.data, id: savedFocus };
+            updateInfoPanel(dataWithId);
             updateFocusVisibility(savedFocus);
         }
     }
@@ -835,6 +836,9 @@ function updateInfoPanel(data) {
     // Check if this is a moon - find its parent planet
     let parentPlanet = null;
     const currentObj = celestialObjects[data.id];
+    
+    // Debug: Check if object exists and has correct type
+    console.log('updateInfoPanel:', data.id, currentObj ? currentObj.type : 'NOT FOUND');
     if (currentObj && currentObj.type === 'moon') {
         // Find parent planet
         const parentEntry = Object.values(celestialObjects).find(p => 
@@ -879,7 +883,13 @@ function updateInfoPanel(data) {
         else if (currentObj.type === 'asteroidBelt') objectType = 'Asteroid Belt';
     } else {
         // Fallback for objects not in registry
-        objectType = data.id === 'sun' ? 'Star' : (data.moons ? 'Planet' : 'Moon');
+        if (data.id === 'sun') {
+            objectType = 'Star';
+        } else if (data.moons && data.moons.length > 0) {
+            objectType = 'Planet';
+        } else {
+            objectType = 'Moon';
+        }
     }
     
     html += `
@@ -1000,7 +1010,9 @@ function focusOnObject(id) {
         else li.classList.remove('active');
     });
 
-    updateInfoPanel(targetObj.data);
+    // Pass data with id included
+    const dataWithId = { ...targetObj.data, id: id };
+    updateInfoPanel(dataWithId);
 
     // On mobile: hide left panel, show right panel and toggle button
     if (window.innerWidth <= 768) {
